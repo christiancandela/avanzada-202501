@@ -1,0 +1,16 @@
+GET http://localhost:8080/users/7e51313a-d5dd-432f-b01f-54efb9a48f0e
+Accept: application/json
+
+###
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "email": "usuario@mail.com",
+  "password": "12345aBc",
+  "fullName": "Usuario de Prueba",
+  "dateBirth": "1990-05-12"
+}
+
+###
+
