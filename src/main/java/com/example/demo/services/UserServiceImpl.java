@@ -4,6 +4,7 @@ import com.example.demo.domain.User;
 import com.example.demo.domain.UserStatus;
 import com.example.demo.dtos.UserRegistrationRequest;
 import com.example.demo.dtos.UserResponse;
+import com.example.demo.exceptions.ValueConflictException;
 import com.example.demo.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserResponse createUser(UserRegistrationRequest user) {
         if (userStore.values().stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(user.email()))) {
-            throw new RuntimeException("Email ya registrado");
+            throw new ValueConflictException("Email ya registrado");
         }
         var newUser = userMapper.parseOf(user);
 //        newUser.setId(UUID.randomUUID().toString());
