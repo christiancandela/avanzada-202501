@@ -1,18 +1,15 @@
 package com.example.demo.services;
 
 import com.example.demo.domain.User;
-import com.example.demo.domain.UserStatus;
 import com.example.demo.dtos.UserRegistrationRequest;
 import com.example.demo.dtos.UserResponse;
 import com.example.demo.exceptions.ValueConflictException;
 import com.example.demo.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
