@@ -12,5 +12,14 @@ Content-Type: application/json
   "dateBirth": "1990-05-12"
 }
 
-###
+### Envío con fallas en la solicitud
+POST http://localhost:8080/users
+Content-Type: application/json
 
+{
+  "email": "usuariomail.com",
+  "fullName": "Usuario de Prueba",
+  "dateBirth": "1990-05-12"
+}
+
+###
