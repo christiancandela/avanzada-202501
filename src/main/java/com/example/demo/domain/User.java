@@ -8,9 +8,9 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@Builder
 @Document("usuarios")
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
