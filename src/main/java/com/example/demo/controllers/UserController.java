@@ -3,9 +3,11 @@ package com.example.demo.controllers;
 
 import com.example.demo.dtos.UserRegistrationRequest;
 import com.example.demo.dtos.UserResponse;
+import com.example.demo.dtos.UserSearchRequest;
 import com.example.demo.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -35,5 +37,10 @@ public class UserController {
         return userService.getUser(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping()
+    public Page<UserResponse> searchUsers(UserSearchRequest request) {
+        return userService.searchUsers(request);
     }
 }
