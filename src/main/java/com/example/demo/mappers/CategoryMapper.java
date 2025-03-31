@@ -13,7 +13,6 @@ import org.mapstruct.MappingConstants;
 public interface CategoryMapper {
     @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID().toString())")
     @Mapping(target = "status", constant = "ACTIVE")
-    UserResponse toUserResponse(User user);
     Category parseOf(CategoryRequest categoryRequest);
     CategoryResponse toCategoryResponse(Category category);
 }
