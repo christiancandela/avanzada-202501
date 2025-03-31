@@ -40,7 +40,6 @@ public class UserServiceImpl implements UserService{
         // Configurar paginación
         Pageable pageable = PageRequest.of(request.page(), request.size());
 
-        System.out.println(request);
         // Llamar al repositorio con los filtros
         return userRepository.findExistingUsersByFilters(
                 request.fullName(),

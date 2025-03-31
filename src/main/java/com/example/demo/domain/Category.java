@@ -18,4 +18,5 @@ public class Category {
     @Indexed(unique = true)
     private String name;
     private String description;
+    private CategoryStatus status;
 }
