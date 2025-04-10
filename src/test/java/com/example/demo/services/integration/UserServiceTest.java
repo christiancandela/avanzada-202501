@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -64,6 +66,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     void testGetUserSuccess() {
         // Sección de Arrange: Se obtiene aleatoriamente uno de los usuarios registrado para pruebas.
         var userStore = users.values().stream().findAny().orElseThrow();
@@ -76,6 +79,31 @@ public class UserServiceTest {
     }
 
     @Test
+    @WithMockUser(username = "ana@example.com", authorities = {"USER"})
+    void testGetUserWithSameUserSuccess() {
+        // Sección de Arrange: Se obtiene aleatoriamente uno de los usuarios registrado para pruebas.
+        var userStore = users.values().stream().filter(user->user.getEmail().equalsIgnoreCase("ana@example.com")).findAny().orElseThrow();
+        // Sección de Act: Ejecute la acción de obtener usuario basado en su Id.
+        var foundUser = userService.getUser(userStore.getId()).orElseThrow();
+        // Sección de Assert: Se verifica que los datos obtenidos correspondan a los del usuario almacenado.
+        assertEquals(userStore.getFullName(),foundUser.fullName());
+        assertEquals(userStore.getDateBirth(),foundUser.dateBirth());
+        assertEquals(userStore.getRol(),foundUser.rol());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void testGetUserWithDiferentUserSuccess() {
+        // Sección de Arrange: Se configura la respuesta simulada por el componente userService,
+        // en este cado se indica que cuando se envíe la solicitud de creación debe retornar la respuesta dada.
+        var userStore = users.values().stream().findAny().orElseThrow();
+
+        // Sección de Act: Ejecute la acción de invocación del servicio de consulta de usuarios
+        assertThrows(AuthorizationDeniedException.class,()->userService.getUser(userStore.getId()));
+    }
+
+    @Test
+    @WithMockUser(authorities = {"ADMIN"})
     void testGetUserNotFound() {
         // Sección de Arrange: Se crean los datos del usuario a ser registrado (Con el email de un usuario ya existente).
         var id = UUID.randomUUID().toString();

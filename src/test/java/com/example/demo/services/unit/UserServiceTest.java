@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -32,6 +33,9 @@ class UserServiceTest {
 
     @Mock
     private UserMapper userMapper; // Simula la conversión de entidades a DTOs
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserServiceImpl userService; // Inyecta los mocks en la implementación real
@@ -52,6 +56,7 @@ class UserServiceTest {
         // Arrange: Simular que no existe un usuario con el email dado
         when(userRepository.findExistingUserByEmail(userRequest.email())).thenReturn(Optional.empty());
         when(userMapper.parseOf(userRequest)).thenReturn(user); // Simular conversión DTO -> Entity
+        when(passwordEncoder.encode(userRequest.password())).thenReturn(user.getPassword());
         when(userRepository.save(any(User.class))).thenReturn(user); // Simular persistencia
         when(userMapper.toUserResponse(any(User.class))).thenReturn(userResponse); // Simular conversión Entity -> DTO
 

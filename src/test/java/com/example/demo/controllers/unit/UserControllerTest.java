@@ -1,6 +1,5 @@
 package com.example.demo.controllers.unit;
 
-import com.example.demo.controllers.UserController;
 import com.example.demo.domain.Rol;
 import com.example.demo.dtos.UserRegistrationRequest;
 import com.example.demo.dtos.UserResponse;
@@ -11,7 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,7 +26,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -32,6 +35,7 @@ public class UserControllerTest {
     private ObjectMapper objectMapper;
     @MockitoBean
     private UserService userService;
+
     private UserRegistrationRequest user;
     private UserResponse userResponse;
 
@@ -72,6 +76,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ADMIN"})
     void testGetUserSuccess() throws Exception {
         // Sección de Arrange: Se configura la respuesta simulada por el componente userService,
         // en este cado se indica que cuando se envíe la solicitud de creación debe retornar la respuesta dada.
@@ -86,6 +91,36 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = {"USER"})
+    void testGetUserWithSameUserSuccess() throws Exception {
+        // Sección de Arrange: Se configura la respuesta simulada por el componente userService,
+        // en este cado se indica que cuando se envíe la solicitud de creación debe retornar la respuesta dada.
+        Mockito.when(userService.getUser(userResponse.id())).thenReturn(Optional.of(userResponse));
+
+        // Sección de Act: Ejecute la acción de invocación del servicio de consulta de usuarios
+        mockMvc.perform(get("/users/"+userResponse.id()))
+                // Sección de Assert: Se verifica que los datos obtenidos correspondan a los del usuario esperado.
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fullName").value(user.fullName()))
+                .andExpect(jsonPath("$.email").value(user.email()))
+                .andExpect(jsonPath("$.rol").value(user.rol().toString()));
+    }
+
+    @Test
+    @WithMockUser(authorities = {"USER"})
+    void testGetUserWithDiferentUserSuccess() throws Exception {
+        // Sección de Arrange: Se configura la respuesta simulada por el componente userService,
+        // en este cado se indica que cuando se envíe la solicitud de creación debe retornar la respuesta dada.
+        Mockito.when(userService.getUser(userResponse.id())).thenThrow(AuthorizationDeniedException.class);
+
+        // Sección de Act: Ejecute la acción de invocación del servicio de consulta de usuarios
+        mockMvc.perform(get("/users/"+userResponse.id()))
+                // Sección de Assert: Se verifica que los datos obtenidos correspondan a los del usuario esperado.
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(authorities = {"ADMIN"})
     void testGetUserNotFound() throws Exception {
         // Sección de Arrange: Se configura la respuesta simulada por el componente userService,
         // en este cado se indica que cuando se envíe la solicitud de creación debe retornar la respuesta dada.

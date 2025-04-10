@@ -1,5 +1,6 @@
 package com.example.demo.controllers.integration;
 
+import com.example.demo.controllers.integration.utils.LoginUtil;
 import com.example.demo.data.TestDataLoader;
 import com.example.demo.domain.Rol;
 import com.example.demo.domain.User;
@@ -79,9 +80,9 @@ public class UserControllerTest {
     void testGetUserSuccess() throws Exception {
         // Sección de Arrange: Se preparan los datos para enviar una solicitud de un usuario registrado
         var userStore = users.values().stream().findAny().orElseThrow();
-
+        var token = LoginUtil.login(userStore.getEmail(),userStore.getPassword().replace("{noop}",""),mockMvc,objectMapper);
         // Sección de Act: Ejecute la acción de invocación del servicio de consulta de usuarios
-        mockMvc.perform(get("/users/"+userStore.getId()))
+        mockMvc.perform(get("/users/"+userStore.getId()).header("Authorization", "Bearer " + token))
                 // Sección de Assert: Se verifica que los datos obtenidos correspondan a los del usuario esperado.
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.fullName").value(userStore.getFullName()))
@@ -93,8 +94,10 @@ public class UserControllerTest {
     void testGetUserNotFound() throws Exception {
         // Sección de Arrange: Se crean los datos del usuario a ser registrado (Con el email de un usuario ya existente).
         var id = UUID.randomUUID().toString();
+        var userStore = users.values().stream().filter(user->user.getRol().equals(Rol.ADMIN)).findAny().orElseThrow();
+        var token = LoginUtil.login(userStore.getEmail(),userStore.getPassword().replace("{noop}",""),mockMvc,objectMapper);
         // Sección de Act: Ejecute la acción de invocación del servicio de consulta de usuarios
-        mockMvc.perform(get("/users/"+id))
+        mockMvc.perform(get("/users/"+id).header("Authorization", "Bearer " + token))
                 // Sección de Assert: Se verifica que la respuesta obtenida sea la esperada (404).
                 .andExpect(status().isNotFound());
     }
