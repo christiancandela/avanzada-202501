@@ -17,7 +17,6 @@ public class SecurityController {
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
-        System.out.println("LOGIN REQUEST -> "+request);
         return ResponseEntity.ok(securityService.login(request));
     }
 }
