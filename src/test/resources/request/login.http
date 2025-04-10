@@ -1,0 +1,33 @@
+###
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "usuario@mail.com",
+  "password": "12345aBc"
+}
+> {% client.global.set("auth_token", response.body.token); %}
+
+###
+
+###
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "usuario@mail.com",
+  "password": "12345aBc"
+}
+
+###
+
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "admin1@mail.com",
+  "password": "admin123"
+}
+> {% client.global.set("auth_token", response.body.token); %}
+
+###

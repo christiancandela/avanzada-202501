@@ -1,7 +1,19 @@
 GET http://localhost:8080/users
 Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+ GET http://localhost:8080/users/e7b225f0-8210-47b8-8bb4-f59fd0195864
+Accept: application/json
+Authorization: Bearer {{auth_token}}
 
 ###
 
 GET http://localhost:8080/users?dateBirth=1990-05-13
+Accept: application/json
+
+###
+
+GET http://localhost:8080/categories
 Accept: application/json

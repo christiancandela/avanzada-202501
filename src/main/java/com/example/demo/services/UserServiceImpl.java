@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,7 +20,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse createUser(UserRegistrationRequest user) {
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService{
             throw new ValueConflictException("Email ya registrado");
         }
         var newUser = userMapper.parseOf(user);
+        newUser.setPassword(passwordEncoder.encode(user.password()));
         return userMapper.toUserResponse(userRepository.save(newUser));
     }
 
