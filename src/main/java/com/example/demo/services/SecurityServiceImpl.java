@@ -39,8 +39,6 @@ public class SecurityServiceImpl implements SecurityService {
 
     public boolean isCurrentUser(String id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println("USUARIO AUTENTICADO "+username);
-        SecurityContextHolder.getContext().getAuthentication().getAuthorities().forEach(System.out::println);
         return userRepository.findById(id)
                 .map(user -> user.getEmail().equals(username))
                 .orElse(false);
