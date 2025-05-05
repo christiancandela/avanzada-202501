@@ -21,8 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<ErrorResponse>> handleValueConflictException(MethodArgumentNotValidException ex) {
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ex.getFieldErrors().stream().map(
                         e->new ErrorResponse("ERROR",e.getField()+"->"+e.getDefaultMessage())
                 ).toList()
